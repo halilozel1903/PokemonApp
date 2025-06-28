@@ -63,7 +63,23 @@ fun PokemonListScreen(
 ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var sortOption by remember { mutableStateOf<SortOption?>(null) }
+    var savedSortOption by remember { mutableStateOf<SortOption?>(null) }
     val pokemonList by viewModel.pokemonList.collectAsState()
+
+    // Clear sort option when searching, restore when search text is cleared
+    LaunchedEffect(searchQuery.text) {
+        if (searchQuery.text.isNotEmpty()) {
+            if (sortOption != null) {
+                savedSortOption = sortOption
+                sortOption = null
+            }
+        } else {
+            if (savedSortOption != null) {
+                sortOption = savedSortOption
+                savedSortOption = null
+            }
+        }
+    }
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
             value = searchQuery,
@@ -72,19 +88,21 @@ fun PokemonListScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            SortOption.entries.forEach { option ->
-                Button(onClick = { sortOption = option }) {
-                    Icon(option.icon, contentDescription = option.label)
-                    Spacer(Modifier.width(4.dp))
-                    Text(option.label)
+        if (searchQuery.text.isEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SortOption.entries.forEach { option ->
+                    Button(onClick = { sortOption = option }) {
+                        Icon(option.icon, contentDescription = option.label)
+                        Spacer(Modifier.width(4.dp))
+                        Text(option.label)
+                    }
                 }
             }
+            Spacer(Modifier.height(8.dp))
         }
-        Spacer(Modifier.height(8.dp))
         val filtered = if (searchQuery.text.isEmpty()) {
             pokemonList
         } else {
@@ -106,9 +124,9 @@ fun PokemonListScreen(
                 Text(text = stringResource(R.string.content_not_found))
                 Spacer(Modifier.height(16.dp))
                 AsyncImage(
-                    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+                    model = "https://images.ctfassets.net/w5r1fvmogo3f/4VN7t0SD1XbEyy3KnJrHTy/7c4ebf24c325bf2f75fa07ab3b41f400/pokemon-banner_b40d63371a1542f8849329421436a7bf.jpeg?fm=webp&q=90&fit=scale&w=1920",
                     contentDescription = null,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         } else {

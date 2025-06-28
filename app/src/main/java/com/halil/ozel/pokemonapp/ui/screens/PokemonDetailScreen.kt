@@ -24,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,8 +74,17 @@ fun PokemonDetailScreen(
             ) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
             }
+            val context = LocalContext.current
             IconButton(
-                onClick = { viewModel.toggleFavorite() },
+                onClick = {
+                    viewModel.toggleFavorite()
+                    val messageRes = if (viewModel.isFavorite()) {
+                        R.string.added_to_favorites
+                    } else {
+                        R.string.removed_from_favorites
+                    }
+                    Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
             ) {
                 val icon = if (viewModel.isFavorite()) Icons.Default.Favorite else Icons.Default.FavoriteBorder
