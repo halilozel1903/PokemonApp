@@ -2,6 +2,8 @@ package com.halil.ozel.pokemonapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -14,6 +16,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,20 +24,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.data.PokemonDetail
-import com.halil.ozel.pokemonapp.data.PokemonRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.halil.ozel.pokemonapp.ui.screens.PokemonDetailViewModel
+import org.koin.androidx.compose.koinViewModel
+import kotlin.random.Random
 
 @Composable
 fun PokemonDetailScreen(
     name: String,
-    repository: PokemonRepository,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
-    val detail: PokemonDetail = runBlocking(Dispatchers.IO) {
-        repository.fetchPokemonDetail(name)
-    }
+    val detailState by viewModel.detail.collectAsState()
+    val detail: PokemonDetail = detailState ?: return
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -43,14 +45,17 @@ fun PokemonDetailScreen(
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
         ) {
-            IconButton(onClick = onBack, modifier = Modifier.align(Alignment.TopStart)) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.align(Alignment.TopStart).padding(16.dp)
+            ) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
             }
             IconButton(
-                onClick = { repository.toggleFavorite(detail.name) },
-                modifier = Modifier.align(Alignment.TopEnd)
+                onClick = { viewModel.toggleFavorite() },
+                modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
             ) {
-                val icon = if (repository.isFavorite(detail.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                val icon = if (viewModel.isFavorite()) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                 Icon(imageVector = icon, contentDescription = null)
             }
 
@@ -72,7 +77,11 @@ fun PokemonDetailScreen(
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Text(
                     text = "${detail.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }} #${detail.id}",
                     style = MaterialTheme.typography.headlineMedium
@@ -82,7 +91,11 @@ fun PokemonDetailScreen(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         detail.types.forEach { typeSlot ->
-                            Card(shape = RoundedCornerShape(50)) {
+                            val color = Color(Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt()))
+                            Card(
+                                shape = RoundedCornerShape(50),
+                                colors = CardDefaults.cardColors(containerColor = color)
+                            ) {
                                 Text(
                                     text = typeSlot.type.name,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

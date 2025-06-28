@@ -26,8 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,18 +37,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.R
-import com.halil.ozel.pokemonapp.data.PokemonRepository
 import com.halil.ozel.pokemonapp.data.PokemonResult
+import com.halil.ozel.pokemonapp.ui.screens.PokemonListViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PokemonListScreen(
-    repository: PokemonRepository,
-    onSelected: (String) -> Unit
+    onSelected: (String) -> Unit,
+    viewModel: PokemonListViewModel = koinViewModel()
 ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    val pokemonList by produceState(initialValue = emptyList<PokemonResult>()) {
-        value = repository.fetchPokemonList()
-    }
+    val pokemonList by viewModel.pokemonList.collectAsState()
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
             value = searchQuery,
@@ -65,7 +63,7 @@ fun PokemonListScreen(
                 pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
             }
             items(filtered) { pokemon ->
-                PokemonGridItem(pokemon = pokemon, repository = repository) {
+                PokemonGridItem(pokemon = pokemon, viewModel = viewModel) {
                     onSelected(pokemon.name)
                 }
             }
@@ -76,7 +74,7 @@ fun PokemonListScreen(
 @Composable
 private fun PokemonGridItem(
     pokemon: PokemonResult,
-    repository: PokemonRepository,
+    viewModel: PokemonListViewModel,
     onClick: () -> Unit
 ) {
     Card(
@@ -101,9 +99,9 @@ private fun PokemonGridItem(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                IconButton(onClick = { repository.toggleFavorite(pokemon.name) }) {
-                    val icon = if (repository.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                    Icon(imageVector = icon, contentDescription = null)
+                IconButton(onClick = { viewModel.toggleFavorite(pokemon.name) }) {
+                    val icon = if (viewModel.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                        Icon(imageVector = icon, contentDescription = null)
                 }
             }
         }
