@@ -12,7 +12,7 @@ ktor = "2.3.9"
 coil = "2.5.0"
 navigationCompose = "2.7.7"
 coroutines = "1.8.1"
-koin = "3.5.3"
+koin = "4.1.0"
 lifecycleViewModelCompose = "2.6.1"
 
 [libraries]
