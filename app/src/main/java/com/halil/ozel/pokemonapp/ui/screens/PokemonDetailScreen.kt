@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,6 +50,7 @@ import com.halil.ozel.pokemonapp.data.ApiConstants
 fun PokemonDetailScreen(
     name: String,
     onBack: () -> Unit = {},
+    onEvolutionClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
     val detailState by viewModel.detail.collectAsState()
@@ -186,7 +188,10 @@ fun PokemonDetailScreen(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         evolutions.forEach { evo ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.clickable { onEvolutionClick(evo.name) }
+                            ) {
                                 AsyncImage(
                                     model = "${ApiConstants.SPRITE_BASE_URL}/${evo.id}.png",
                                     contentDescription = null,
