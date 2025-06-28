@@ -11,6 +11,10 @@ import kotlinx.serialization.json.Json
 import androidx.compose.runtime.mutableStateListOf
 
 import com.halil.ozel.pokemonapp.data.ApiConstants
+import com.halil.ozel.pokemonapp.data.PokemonSpecies
+import com.halil.ozel.pokemonapp.data.EvolutionChain
+import com.halil.ozel.pokemonapp.data.ChainLink
+import com.halil.ozel.pokemonapp.data.EvolutionPokemon
 
 class PokemonRepository {
     private val client = HttpClient(Android) {
@@ -38,4 +42,22 @@ class PokemonRepository {
     }
 
     fun isFavorite(name: String): Boolean = favorites.contains(name)
+
+    private fun idFromUrl(url: String): Int =
+        url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
+
+    suspend fun fetchEvolutionNames(name: String): List<EvolutionPokemon> {
+        val species: PokemonSpecies =
+            client.get("${ApiConstants.SPECIES_ENDPOINT}/$name").body()
+        val chainUrl = species.evolutionChain.url
+        val chain: EvolutionChain = client.get(chainUrl).body()
+        val result = mutableListOf<EvolutionPokemon>()
+
+        fun traverse(link: ChainLink) {
+            result.add(EvolutionPokemon(link.species.name, idFromUrl(link.species.url)))
+            link.evolvesTo.forEach { traverse(it) }
+        }
+        traverse(chain.chain)
+        return result
+    }
 }
