@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -36,10 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.data.PokemonDetail
-import com.halil.ozel.pokemonapp.ui.screens.PokemonDetailViewModel
 import com.halil.ozel.pokemonapp.R
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
@@ -75,16 +73,7 @@ fun PokemonDetailScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
             }
             IconButton(
-                onClick = {
-                    viewModel.toggleFavorite()
-                    val context = LocalContext.current
-                    val messageRes = if (viewModel.isFavorite()) {
-                        R.string.added_to_favorites
-                    } else {
-                        R.string.removed_from_favorites
-                    }
-                    Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
-                },
+                onClick = { viewModel.toggleFavorite() },
                 modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
             ) {
                 val icon = if (viewModel.isFavorite()) Icons.Default.Favorite else Icons.Default.FavoriteBorder
