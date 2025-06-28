@@ -10,6 +10,8 @@ import kotlinx.serialization.json.Json
 
 import androidx.compose.runtime.mutableStateListOf
 
+import com.halil.ozel.pokemonapp.data.ApiConstants
+
 class PokemonRepository {
     private val client = HttpClient(Android) {
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
@@ -19,12 +21,12 @@ class PokemonRepository {
 
     suspend fun fetchPokemonList(): List<PokemonResult> {
         val response: PokemonListResponse =
-            client.get("https://pokeapi.co/api/v2/pokemon?limit=151").body()
+            client.get("${ApiConstants.POKEMON_ENDPOINT}?limit=${ApiConstants.DEFAULT_LIMIT}").body()
         return response.results
     }
 
     suspend fun fetchPokemonDetail(name: String): PokemonDetail {
-        return client.get("https://pokeapi.co/api/v2/pokemon/$name").body()
+        return client.get("${ApiConstants.POKEMON_ENDPOINT}/$name").body()
     }
 
     fun toggleFavorite(name: String) {

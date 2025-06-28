@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.R
 import com.halil.ozel.pokemonapp.data.PokemonResult
+import com.halil.ozel.pokemonapp.data.ApiConstants
+import com.halil.ozel.pokemonapp.ui.screens.PokemonListViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -87,7 +89,7 @@ private fun PokemonGridItem(
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)) {
             val id = pokemon.url.trimEnd('/').split("/").last()
             AsyncImage(
-                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png",
+                model = "${ApiConstants.SPRITE_BASE_URL}/$id.png",
                 contentDescription = null,
                 modifier = Modifier.size(100.dp),
                 contentScale = ContentScale.Crop,
