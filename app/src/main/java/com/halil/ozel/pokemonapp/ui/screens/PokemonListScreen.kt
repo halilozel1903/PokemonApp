@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -22,19 +24,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -42,7 +45,19 @@ import com.halil.ozel.pokemonapp.R
 import com.halil.ozel.pokemonapp.data.PokemonResult
 import com.halil.ozel.pokemonapp.data.ApiConstants
 import com.halil.ozel.pokemonapp.ui.screens.PokemonListViewModel
+import android.widget.Toast
 import org.koin.androidx.compose.koinViewModel
+
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.ui.graphics.vector.ImageVector
+
+private enum class SortOption(val icon: ImageVector, val label: String) {
+    A_Z(Icons.Default.ArrowUpward, "A-Z"),
+    Z_A(Icons.Default.ArrowDownward, "Z-A"),
+    POWER(Icons.Default.Bolt, "Power")
+}
 
 @Composable
 fun PokemonListScreen(
@@ -50,6 +65,7 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = koinViewModel()
 ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var sortOption by remember { mutableStateOf(SortOption.A_Z) }
     val pokemonList by viewModel.pokemonList.collectAsState()
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
@@ -59,15 +75,50 @@ fun PokemonListScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-            val filtered = if (searchQuery.text.isEmpty()) {
-                pokemonList
-            } else {
-                pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            SortOption.values().forEach { option ->
+                Button(onClick = { sortOption = option }) {
+                    Icon(option.icon, contentDescription = option.label)
+                    Spacer(Modifier.width(4.dp))
+                    Text(option.label)
+                }
             }
-            items(filtered) { pokemon ->
-                PokemonGridItem(pokemon = pokemon, viewModel = viewModel) {
-                    onSelected(pokemon.name)
+        }
+        Spacer(Modifier.height(8.dp))
+        val filtered = if (searchQuery.text.isEmpty()) {
+            pokemonList
+        } else {
+            pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
+        }
+        val sorted = when (sortOption) {
+            SortOption.A_Z -> filtered.sortedBy { it.name }
+            SortOption.Z_A -> filtered.sortedByDescending { it.name }
+            SortOption.POWER -> filtered.sortedByDescending {
+                it.url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
+            }
+        }
+        if (sorted.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(R.string.content_not_found))
+                Spacer(Modifier.height(16.dp))
+                AsyncImage(
+                    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp)
+                )
+            }
+        } else {
+            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                items(sorted) { pokemon ->
+                    PokemonGridItem(pokemon = pokemon, viewModel = viewModel) {
+                        onSelected(pokemon.name)
+                    }
                 }
             }
         }
@@ -102,9 +153,18 @@ private fun PokemonGridItem(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                IconButton(onClick = { viewModel.toggleFavorite(pokemon.name) }) {
+                val context = LocalContext.current
+                IconButton(onClick = {
+                    viewModel.toggleFavorite(pokemon.name)
+                    val messageRes = if (viewModel.isFavorite(pokemon.name)) {
+                        R.string.added_to_favorites
+                    } else {
+                        R.string.removed_from_favorites
+                    }
+                    Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
+                }) {
                     val icon = if (viewModel.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                        Icon(imageVector = icon, contentDescription = null)
+                    Icon(imageVector = icon, contentDescription = null)
                 }
             }
         }
