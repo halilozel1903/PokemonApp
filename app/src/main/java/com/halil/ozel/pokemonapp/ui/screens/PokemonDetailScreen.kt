@@ -41,7 +41,7 @@ import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.data.PokemonDetail
 import com.halil.ozel.pokemonapp.R
 import org.koin.androidx.compose.koinViewModel
-import kotlin.random.Random
+import com.halil.ozel.pokemonapp.ui.theme.getColorFromType
 
 @Composable
 fun PokemonDetailScreen(
@@ -123,7 +123,7 @@ fun PokemonDetailScreen(
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         detail.types.forEach { typeSlot ->
-                            val color = Color(Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt()))
+                            val color = getColorFromType(typeSlot.type.name)
                             Card(
                                 shape = RoundedCornerShape(50),
                                 colors = CardDefaults.cardColors(containerColor = color)
