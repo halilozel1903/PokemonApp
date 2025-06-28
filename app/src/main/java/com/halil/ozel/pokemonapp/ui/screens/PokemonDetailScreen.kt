@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +46,16 @@ fun PokemonDetailScreen(
     viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
     val detailState by viewModel.detail.collectAsState()
-    val detail: PokemonDetail = detailState ?: return
+    if (detailState == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val detail: PokemonDetail = detailState!!
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
