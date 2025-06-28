@@ -18,10 +18,36 @@ data class PokemonResult(
 data class PokemonDetail(
     val id: Int,
     val name: String,
-    val sprites: Sprites
+    val sprites: Sprites,
+    val weight: Int? = null,
+    val height: Int? = null,
+    @SerialName("base_experience") val baseExperience: Int? = null,
+    val types: List<TypeSlot> = emptyList()
 )
 
 @Serializable
 data class Sprites(
+    @SerialName("front_default") val frontDefault: String? = null,
+    val other: OtherSprites? = null
+)
+
+@Serializable
+data class OtherSprites(
+    @SerialName("official-artwork") val officialArtwork: OfficialArtwork? = null
+)
+
+@Serializable
+data class OfficialArtwork(
     @SerialName("front_default") val frontDefault: String? = null
+)
+
+@Serializable
+data class TypeSlot(
+    val slot: Int,
+    val type: Type
+)
+
+@Serializable
+data class Type(
+    val name: String
 )
