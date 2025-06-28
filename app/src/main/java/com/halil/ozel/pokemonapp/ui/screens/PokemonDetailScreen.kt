@@ -148,7 +148,9 @@ fun PokemonDetailScreen(
                     detail.stats.forEach { stat ->
                         Text(text = stat.stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
                         LinearProgressIndicator(
-                            progress = (stat.baseStat.coerceAtMost(100)) / 100f,
+                            progress = {
+                                (stat.baseStat.coerceAtMost(100)) / 100f
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
