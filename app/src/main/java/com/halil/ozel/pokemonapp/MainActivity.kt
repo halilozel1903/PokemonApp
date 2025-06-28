@@ -44,7 +44,11 @@ fun PokemonApp() {
             arguments = listOf(navArgument("name") { type = NavType.StringType })
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: return@composable
-            PokemonDetailScreen(name = name, onBack = { navController.popBackStack() })
+            PokemonDetailScreen(
+                name = name,
+                onBack = { navController.popBackStack() },
+                onEvolutionClick = { navController.navigate("detail/$it") }
+            )
         }
     }
 }
