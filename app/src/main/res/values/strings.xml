@@ -6,4 +6,7 @@
     <string name="weight_format">Weight: %1$d ⚖️</string>
     <string name="base_experience_format">Base Exp: %1$d ✨</string>
     <string name="base_stats">Base Stats 📊</string>
+    <string name="content_not_found">No results 🙁</string>
+    <string name="added_to_favorites">Added to favorites ⭐</string>
+    <string name="removed_from_favorites">Removed from favorites ❌</string>
 </resources>
