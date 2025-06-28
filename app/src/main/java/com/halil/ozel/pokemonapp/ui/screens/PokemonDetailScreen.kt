@@ -61,12 +61,15 @@ fun PokemonDetailScreen(
     }
     val detail: PokemonDetail = detailState!!
 
+    val typeColor = detail.types.firstOrNull()?.let { getColorFromType(it.type.name) }
+        ?: MaterialTheme.colorScheme.primary
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                .background(typeColor.copy(alpha = 0.2f))
         ) {
             IconButton(
                 onClick = onBack,
