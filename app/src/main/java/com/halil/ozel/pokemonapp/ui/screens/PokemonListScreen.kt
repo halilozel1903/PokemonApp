@@ -49,6 +49,7 @@ import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.R
 import com.halil.ozel.pokemonapp.data.ApiConstants
 import com.halil.ozel.pokemonapp.data.PokemonResult
+import com.halil.ozel.pokemonapp.ui.theme.getColorFromType
 import org.koin.androidx.compose.koinViewModel
 
 private enum class SortOption(val icon: ImageVector, val label: String) {
@@ -148,10 +149,14 @@ private fun PokemonGridItem(
     viewModel: PokemonListViewModel,
     onClick: () -> Unit
 ) {
+    val types by viewModel.pokemonTypes.collectAsState()
+    val typeColor = types[pokemon.name]?.let { getColorFromType(it) }
+
     Card(
         modifier = Modifier
             .padding(8.dp)
             .clickable { onClick() },
+        colors = if (typeColor != null) CardDefaults.cardColors(containerColor = typeColor) else CardDefaults.cardColors(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)) {
