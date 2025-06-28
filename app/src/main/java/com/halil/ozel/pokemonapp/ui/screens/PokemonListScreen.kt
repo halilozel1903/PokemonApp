@@ -55,7 +55,8 @@ import org.koin.androidx.compose.koinViewModel
 private enum class SortOption(val icon: ImageVector, val label: String) {
     A_Z(Icons.Default.ArrowUpward, "A-Z"),
     Z_A(Icons.Default.ArrowDownward, "Z-A"),
-    POWER(Icons.Default.Bolt, "Power")
+    POWER(Icons.Default.Bolt, "Power"),
+    FAVORITES(Icons.Default.Favorite, "Favorites")
 }
 
 @Composable
@@ -116,6 +117,8 @@ fun PokemonListScreen(
             SortOption.POWER -> filtered.sortedByDescending {
                 it.url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
             }
+            SortOption.FAVORITES ->
+                filtered.filter { viewModel.isFavorite(it.name) }
             null -> filtered
         }
         if (sorted.isEmpty()) {
