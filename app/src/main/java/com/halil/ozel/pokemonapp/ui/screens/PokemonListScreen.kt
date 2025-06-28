@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -55,14 +58,14 @@ fun PokemonListScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        LazyColumn {
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
             val filtered = if (searchQuery.text.isEmpty()) {
                 pokemonList
             } else {
                 pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
             }
             items(filtered) { pokemon ->
-                PokemonRow(pokemon = pokemon, repository = repository) {
+                PokemonGridItem(pokemon = pokemon, repository = repository) {
                     onSelected(pokemon.name)
                 }
             }
@@ -71,35 +74,38 @@ fun PokemonListScreen(
 }
 
 @Composable
-private fun PokemonRow(
+private fun PokemonGridItem(
     pokemon: PokemonResult,
     repository: PokemonRepository,
     onClick: () -> Unit
 ) {
-    Row(
+    Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        val id = pokemon.url.trimEnd('/').split("/").last()
-        AsyncImage(
-            model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png",
-            contentDescription = null,
-            modifier = Modifier.size(72.dp),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.ic_launcher_foreground)
-        )
-        Spacer(Modifier.width(16.dp))
-        Text(
-            text = pokemon.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
-        )
-        IconButton(onClick = { repository.toggleFavorite(pokemon.name) }) {
-            val icon = if (repository.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-            Icon(imageVector = icon, contentDescription = null)
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)) {
+            val id = pokemon.url.trimEnd('/').split("/").last()
+            AsyncImage(
+                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png",
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.ic_launcher_foreground)
+            )
+            Spacer(Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = pokemon.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                IconButton(onClick = { repository.toggleFavorite(pokemon.name) }) {
+                    val icon = if (repository.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                    Icon(imageVector = icon, contentDescription = null)
+                }
+            }
         }
     }
 }
