@@ -56,7 +56,7 @@ private enum class SortOption(val icon: ImageVector, val label: String) {
     A_Z(Icons.Default.ArrowUpward, "A-Z"),
     Z_A(Icons.Default.ArrowDownward, "Z-A"),
     POWER(Icons.Default.Bolt, "Power"),
-    FAVORITES(Icons.Default.Favorite, "Favorites")
+    FAVORITES(Icons.Default.Favorite, "Fav")
 }
 
 @Composable
