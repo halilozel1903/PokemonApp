@@ -62,7 +62,7 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = koinViewModel()
 ) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var sortOption by remember { mutableStateOf(SortOption.A_Z) }
+    var sortOption by remember { mutableStateOf<SortOption?>(null) }
     val pokemonList by viewModel.pokemonList.collectAsState()
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
@@ -96,6 +96,7 @@ fun PokemonListScreen(
             SortOption.POWER -> filtered.sortedByDescending {
                 it.url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
             }
+            null -> filtered
         }
         if (sorted.isEmpty()) {
             Column(
