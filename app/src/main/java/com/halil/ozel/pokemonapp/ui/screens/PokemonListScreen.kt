@@ -85,9 +85,9 @@ private fun PokemonRow(
     ) {
         val id = pokemon.url.trimEnd('/').split("/").last()
         AsyncImage(
-            model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+            model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png",
             contentDescription = null,
-            modifier = Modifier.size(56.dp),
+            modifier = Modifier.size(72.dp),
             contentScale = ContentScale.Crop,
             placeholder = painterResource(R.drawable.ic_launcher_foreground)
         )

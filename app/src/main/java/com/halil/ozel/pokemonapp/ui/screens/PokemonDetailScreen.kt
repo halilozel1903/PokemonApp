@@ -29,8 +29,10 @@ fun PokemonDetailScreen(name: String, repository: PokemonRepository) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val imageUrl = detail.sprites.other?.officialArtwork?.frontDefault
+            ?: detail.sprites.frontDefault
         AsyncImage(
-            model = detail.sprites.frontDefault,
+            model = imageUrl,
             contentDescription = null,
             modifier = Modifier.size(200.dp)
         )
@@ -48,5 +50,22 @@ fun PokemonDetailScreen(name: String, repository: PokemonRepository) {
         }
         Spacer(Modifier.height(8.dp))
         Text(text = "ID: ${detail.id}", style = MaterialTheme.typography.bodyLarge)
+        detail.height?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(text = "Height: $it", style = MaterialTheme.typography.bodyLarge)
+        }
+        detail.weight?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(text = "Weight: $it", style = MaterialTheme.typography.bodyLarge)
+        }
+        detail.baseExperience?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(text = "Base Exp: $it", style = MaterialTheme.typography.bodyLarge)
+        }
+        if (detail.types.isNotEmpty()) {
+            Spacer(Modifier.height(4.dp))
+            val types = detail.types.joinToString { it.type.name }
+            Text(text = "Types: $types", style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }
