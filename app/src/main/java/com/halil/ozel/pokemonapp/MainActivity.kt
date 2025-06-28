@@ -35,9 +35,9 @@ fun PokemonApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "list") {
         composable("list") {
-            PokemonListScreen { name ->
+            PokemonListScreen(onSelected = { name ->
                 navController.navigate("detail/$name")
-            }
+            })
         }
         composable(
             "detail/{name}",
