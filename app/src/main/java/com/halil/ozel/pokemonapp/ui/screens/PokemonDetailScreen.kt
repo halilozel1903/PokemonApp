@@ -39,9 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.data.PokemonDetail
+import com.halil.ozel.pokemonapp.data.EvolutionPokemon
 import com.halil.ozel.pokemonapp.R
 import org.koin.androidx.compose.koinViewModel
 import com.halil.ozel.pokemonapp.ui.theme.getColorFromType
+import com.halil.ozel.pokemonapp.data.ApiConstants
 
 @Composable
 fun PokemonDetailScreen(
@@ -50,6 +52,7 @@ fun PokemonDetailScreen(
     viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
     val detailState by viewModel.detail.collectAsState()
+    val evolutions by viewModel.evolutions.collectAsState()
     if (detailState == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -69,7 +72,7 @@ fun PokemonDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(typeColor.copy(alpha = 0.2f))
+                .background(typeColor)
         ) {
             IconButton(
                 onClick = onBack,
@@ -174,6 +177,24 @@ fun PokemonDetailScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.height(8.dp))
+                    }
+                }
+
+                if (evolutions.isNotEmpty()) {
+                    Spacer(Modifier.height(16.dp))
+                    Text(text = stringResource(R.string.evolutions), style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        evolutions.forEach { evo ->
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                AsyncImage(
+                                    model = "${ApiConstants.SPRITE_BASE_URL}/${evo.id}.png",
+                                    contentDescription = null,
+                                    modifier = Modifier.size(80.dp)
+                                )
+                                Text(evo.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
+                            }
+                        }
                     }
                 }
             }

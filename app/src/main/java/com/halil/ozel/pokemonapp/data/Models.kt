@@ -71,3 +71,40 @@ data class StatSlot(
 data class StatDetail(
     val name: String
 )
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class PokemonSpecies(
+    @SerialName("evolution_chain") val evolutionChain: EvolutionChainLink
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class EvolutionChainLink(
+    val url: String
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class EvolutionChain(
+    val chain: ChainLink
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class ChainLink(
+    val species: NamedApiResource,
+    @SerialName("evolves_to") val evolvesTo: List<ChainLink> = emptyList()
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class NamedApiResource(
+    val name: String,
+    val url: String
+)
+
+data class EvolutionPokemon(
+    val name: String,
+    val id: Int
+)

@@ -9,4 +9,5 @@
     <string name="content_not_found">No results 🙁</string>
     <string name="added_to_favorites">Added to favorites ⭐</string>
     <string name="removed_from_favorites">Removed from favorites ❌</string>
+    <string name="evolutions">Evolutions 🔄</string>
 </resources>

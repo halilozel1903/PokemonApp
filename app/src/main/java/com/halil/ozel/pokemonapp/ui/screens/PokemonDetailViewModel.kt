@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.halil.ozel.pokemonapp.data.PokemonDetail
 import com.halil.ozel.pokemonapp.data.PokemonRepository
+import com.halil.ozel.pokemonapp.data.EvolutionPokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,9 +21,13 @@ class PokemonDetailViewModel(
     private val _detail = MutableStateFlow<PokemonDetail?>(null)
     val detail: StateFlow<PokemonDetail?> = _detail.asStateFlow()
 
+    private val _evolutions = MutableStateFlow<List<EvolutionPokemon>>(emptyList())
+    val evolutions: StateFlow<List<EvolutionPokemon>> = _evolutions.asStateFlow()
+
     init {
         viewModelScope.launch {
             _detail.value = repository.fetchPokemonDetail(name)
+            _evolutions.value = repository.fetchEvolutionNames(name)
         }
     }
 
