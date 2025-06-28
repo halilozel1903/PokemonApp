@@ -20,3 +20,17 @@ The app uses **PokeAPI**, an open REST API that provides Pokémon details, speci
 
 ## Getting Started ▶️
 Open the project in Android Studio Giraffe or later and run on a device or emulator (minSdk 26).
+
+## Screenshots 📷
+
+### Home Screen 🏠
+
+<img src="pk1.png" width="300" alt="Home screen" />
+
+A simple list of Pokémon with search. 🐉
+
+### Detail Screen 📋
+
+<img src="pk2.png" width="300" alt="Detail screen" />
+
+Detailed Pokémon information with evolutions. ⚡
