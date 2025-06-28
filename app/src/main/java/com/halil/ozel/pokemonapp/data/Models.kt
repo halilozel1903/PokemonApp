@@ -26,7 +26,8 @@ data class PokemonDetail(
     val weight: Int? = null,
     val height: Int? = null,
     @SerialName("base_experience") val baseExperience: Int? = null,
-    val types: List<TypeSlot> = emptyList()
+    val types: List<TypeSlot> = emptyList(),
+    val stats: List<StatSlot> = emptyList()
 )
 
 @SuppressLint("UnsafeOptInUsageError")
@@ -57,5 +58,16 @@ data class TypeSlot(
 
 @Serializable
 data class Type(
+    val name: String
+)
+
+@Serializable
+data class StatSlot(
+    @SerialName("base_stat") val baseStat: Int,
+    val stat: StatDetail
+)
+
+@Serializable
+data class StatDetail(
     val name: String
 )
