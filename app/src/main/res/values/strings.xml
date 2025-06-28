@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">PokemonApp</string>
     <string name="search">Search</string>
+    <string name="about">About ℹ️</string>
+    <string name="height_format">Height: %1$d 📏</string>
+    <string name="weight_format">Weight: %1$d ⚖️</string>
+    <string name="base_experience_format">Base Exp: %1$d ✨</string>
+    <string name="base_stats">Base Stats 📊</string>
 </resources>

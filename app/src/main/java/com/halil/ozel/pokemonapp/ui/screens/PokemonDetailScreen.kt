@@ -22,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halil.ozel.pokemonapp.data.PokemonDetail
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.halil.ozel.pokemonapp.ui.screens.PokemonDetailViewModel
+import com.halil.ozel.pokemonapp.R
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
@@ -108,24 +110,24 @@ fun PokemonDetailScreen(
                 }
 
                 Spacer(Modifier.height(16.dp))
-                Text(text = "About", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.about), style = MaterialTheme.typography.titleMedium)
 
                 detail.height?.let {
                     Spacer(Modifier.height(4.dp))
-                    Text(text = "Height: $it")
+                    Text(text = stringResource(R.string.height_format, it))
                 }
                 detail.weight?.let {
                     Spacer(Modifier.height(4.dp))
-                    Text(text = "Weight: $it")
+                    Text(text = stringResource(R.string.weight_format, it))
                 }
                 detail.baseExperience?.let {
                     Spacer(Modifier.height(4.dp))
-                    Text(text = "Base Exp: $it")
+                    Text(text = stringResource(R.string.base_experience_format, it))
                 }
 
                 if (detail.stats.isNotEmpty()) {
                     Spacer(Modifier.height(16.dp))
-                    Text(text = "Base Stats", style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.base_stats), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     detail.stats.forEach { stat ->
                         Text(text = stat.stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
