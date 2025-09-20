@@ -135,7 +135,7 @@ fun PokemonListScreen(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
             ) {
-                SortOption.entries.forEach { option ->
+                listOf(SortOption.A_Z, SortOption.Z_A, SortOption.POWER, SortOption.FAVORITES).forEach { option ->
                     Button(onClick = { sortOption = option }) {
                         Icon(option.icon, contentDescription = option.label)
                         Spacer(Modifier.width(4.dp))
@@ -176,24 +176,25 @@ fun PokemonListScreen(
                     filtered.filter { viewModel.isFavorite(it.name) }
                 null -> filtered
             }
-            if (sorted.isEmpty() && !uiState.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.content_not_found))
-                Spacer(Modifier.height(16.dp))
-                AsyncImage(
-                    model = "https://images.ctfassets.net/w5r1fvmogo3f/4VN7t0SD1XbEyy3KnJrHTy/7c4ebf24c325bf2f75fa07ab3b41f400/pokemon-banner_b40d63371a1542f8849329421436a7bf.jpeg?fm=webp&q=90&fit=scale&w=1920",
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        } else {
-            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                items(sorted) { pokemon ->
-                    PokemonGridItem(pokemon = pokemon, viewModel = viewModel) {
-                        onSelected(pokemon.name)
+            if (sorted.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = stringResource(R.string.content_not_found))
+                    Spacer(Modifier.height(16.dp))
+                    AsyncImage(
+                        model = "https://images.ctfassets.net/w5r1fvmogo3f/4VN7t0SD1XbEyy3KnJrHTy/7c4ebf24c325bf2f75fa07ab3b41f400/pokemon-banner_b40d63371a1542f8849329421436a7bf.jpeg?fm=webp&q=90&fit=scale&w=1920",
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            } else {
+                LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                    items(sorted) { pokemon ->
+                        PokemonGridItem(pokemon = pokemon, viewModel = viewModel) {
+                            onSelected(pokemon.name)
+                        }
                     }
                 }
             }
@@ -202,7 +203,7 @@ fun PokemonListScreen(
 }
 
 @Composable
-private fun PokemonGridItem(
+fun PokemonGridItem(
     pokemon: PokemonResult,
     viewModel: PokemonListViewModel,
     onClick: () -> Unit
