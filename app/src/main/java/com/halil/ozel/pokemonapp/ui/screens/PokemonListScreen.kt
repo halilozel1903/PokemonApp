@@ -3,6 +3,7 @@ package com.halil.ozel.pokemonapp.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +71,7 @@ fun PokemonListScreen(
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var sortOption by remember { mutableStateOf<SortOption?>(null) }
     var savedSortOption by remember { mutableStateOf<SortOption?>(null) }
-    val pokemonList by viewModel.pokemonList.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     // Clear sort option when searching, restore when search text is cleared
     LaunchedEffect(searchQuery.text) {
@@ -85,6 +87,7 @@ fun PokemonListScreen(
             }
         }
     }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
             value = searchQuery,
@@ -93,6 +96,38 @@ fun PokemonListScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
+
+        // Error handling
+        uiState.errorMessage?.let { errorMessage ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Error",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Button(
+                        onClick = { viewModel.retryLoadPokemon() },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Retry")
+                    }
+                }
+            }
+        }
+
         if (searchQuery.text.isEmpty()) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -110,22 +145,38 @@ fun PokemonListScreen(
             }
             Spacer(Modifier.height(8.dp))
         }
-        val filtered = if (searchQuery.text.isEmpty()) {
-            pokemonList
-        } else {
-            pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
-        }
-        val sorted = when (sortOption) {
-            SortOption.A_Z -> filtered.sortedBy { it.name }
-            SortOption.Z_A -> filtered.sortedByDescending { it.name }
-            SortOption.POWER -> filtered.sortedByDescending {
-                it.url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
+        
+        // Show loading indicator
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                    Text("Loading Pokemon...")
+                }
             }
-            SortOption.FAVORITES ->
-                filtered.filter { viewModel.isFavorite(it.name) }
-            null -> filtered
-        }
-        if (sorted.isEmpty()) {
+        } else {
+            val filtered = if (searchQuery.text.isEmpty()) {
+                uiState.pokemonList
+            } else {
+                uiState.pokemonList.filter { it.name.contains(searchQuery.text, ignoreCase = true) }
+            }
+            val sorted = when (sortOption) {
+                SortOption.A_Z -> filtered.sortedBy { it.name }
+                SortOption.Z_A -> filtered.sortedByDescending { it.name }
+                SortOption.POWER -> filtered.sortedByDescending {
+                    it.url.trimEnd('/').split("/").last().toIntOrNull() ?: 0
+                }
+                SortOption.FAVORITES ->
+                    filtered.filter { viewModel.isFavorite(it.name) }
+                null -> filtered
+            }
+            if (sorted.isEmpty() && !uiState.isLoading) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -156,8 +207,8 @@ private fun PokemonGridItem(
     viewModel: PokemonListViewModel,
     onClick: () -> Unit
 ) {
-    val types by viewModel.pokemonTypes.collectAsState()
-    val typeColor = types[pokemon.name]?.let { getColorFromType(it) }
+    val uiState by viewModel.uiState.collectAsState()
+    val typeColor = uiState.pokemonTypes[pokemon.name]?.let { getColorFromType(it) }
 
     Card(
         modifier = Modifier
@@ -170,7 +221,7 @@ private fun PokemonGridItem(
             val id = pokemon.url.trimEnd('/').split("/").last()
             AsyncImage(
                 model = "${ApiConstants.SPRITE_BASE_URL}/$id.png",
-                contentDescription = null,
+                contentDescription = "Pokemon ${pokemon.name}",
                 modifier = Modifier.size(100.dp),
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(R.drawable.ic_launcher_foreground)
@@ -193,7 +244,12 @@ private fun PokemonGridItem(
                     Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
                 }) {
                     val icon = if (viewModel.isFavorite(pokemon.name)) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-                    Icon(imageVector = icon, contentDescription = null)
+                    val contentDescription = if (viewModel.isFavorite(pokemon.name)) {
+                        "Remove ${pokemon.name} from favorites"
+                    } else {
+                        "Add ${pokemon.name} to favorites"
+                    }
+                    Icon(imageVector = icon, contentDescription = contentDescription)
                 }
             }
         }
