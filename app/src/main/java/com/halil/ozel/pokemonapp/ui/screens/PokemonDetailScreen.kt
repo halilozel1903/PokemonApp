@@ -16,7 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.halil.ozel.pokemonapp.data.PokemonDetail
-import com.halil.ozel.pokemonapp.data.EvolutionPokemon
 import com.halil.ozel.pokemonapp.R
 import org.koin.androidx.compose.koinViewModel
 import com.halil.ozel.pokemonapp.ui.theme.getColorFromType
@@ -56,7 +55,7 @@ fun PokemonDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     
     // Error handling
-    if (uiState.errorMessage != null) {
+    uiState.errorMessage?.let { errorMessage ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -77,7 +76,7 @@ fun PokemonDetailScreen(
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
                     Text(
-                        text = uiState.errorMessage,
+                        text = errorMessage,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.padding(vertical = 8.dp)
@@ -116,7 +115,7 @@ fun PokemonDetailScreen(
         return
     }
     
-    val detail = uiState.pokemon
+    val detail = uiState.pokemon!!
     val typeColor = detail.types.firstOrNull()?.let { getColorFromType(it.type.name) }
         ?: MaterialTheme.colorScheme.primary
 
@@ -131,7 +130,7 @@ fun PokemonDetailScreen(
                 onClick = onBack,
                 modifier = Modifier.align(Alignment.TopStart).padding(16.dp)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
             }
             val context = LocalContext.current
             IconButton(
@@ -220,9 +219,7 @@ fun PokemonDetailScreen(
                     detail.stats.forEach { stat ->
                         Text(text = stat.stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
                         LinearProgressIndicator(
-                            progress = {
-                                (stat.baseStat.coerceAtMost(100)) / 100f
-                            },
+                            progress = (stat.baseStat.coerceAtMost(100)) / 100f,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
