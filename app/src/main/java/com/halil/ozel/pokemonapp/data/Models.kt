@@ -1,23 +1,19 @@
 package com.halil.ozel.pokemonapp.data
 
-import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class PokemonListResponse(
     val results: List<PokemonResult>
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class PokemonResult(
     val name: String,
     val url: String
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class PokemonDetail(
     val id: Int,
@@ -30,26 +26,22 @@ data class PokemonDetail(
     val stats: List<StatSlot> = emptyList()
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class Sprites(
     @SerialName("front_default") val frontDefault: String? = null,
     val other: OtherSprites? = null
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class OtherSprites(
     @SerialName("official-artwork") val officialArtwork: OfficialArtwork? = null
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class OfficialArtwork(
     @SerialName("front_default") val frontDefault: String? = null
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class TypeSlot(
     val slot: Int,
@@ -72,32 +64,27 @@ data class StatDetail(
     val name: String
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class PokemonSpecies(
     @SerialName("evolution_chain") val evolutionChain: EvolutionChainLink
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class EvolutionChainLink(
     val url: String
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class EvolutionChain(
     val chain: ChainLink
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class ChainLink(
     val species: NamedApiResource,
     @SerialName("evolves_to") val evolvesTo: List<ChainLink> = emptyList()
 )
 
-@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class NamedApiResource(
     val name: String,
@@ -107,4 +94,25 @@ data class NamedApiResource(
 data class EvolutionPokemon(
     val name: String,
     val id: Int
+)
+
+// Modern UI state management classes
+sealed class UiState<out T> {
+    object Loading : UiState<Nothing>()
+    data class Success<T>(val data: T) : UiState<T>()
+    data class Error(val exception: Throwable) : UiState<Nothing>()
+}
+
+data class PokemonListUiState(
+    val pokemonList: List<PokemonResult> = emptyList(),
+    val pokemonTypes: Map<String, String> = emptyMap(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)
+
+data class PokemonDetailUiState(
+    val pokemon: PokemonDetail? = null,
+    val evolutions: List<EvolutionPokemon> = emptyList(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )

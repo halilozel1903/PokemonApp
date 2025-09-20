@@ -53,19 +53,70 @@ fun PokemonDetailScreen(
     onEvolutionClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
-    val detailState by viewModel.detail.collectAsState()
-    val evolutions by viewModel.evolutions.collectAsState()
-    if (detailState == null) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    // Error handling
+    if (uiState.errorMessage != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Error",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Text(
+                        text = uiState.errorMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    Button(
+                        onClick = { viewModel.retryLoadPokemon() }
+                    ) {
+                        Text("Retry")
+                    }
+                    Button(
+                        onClick = onBack,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Go Back")
+                    }
+                }
+            }
+        }
+        return
+    }
+    
+    // Loading state
+    if (uiState.isLoading || uiState.pokemon == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+                Spacer(Modifier.height(16.dp))
+                Text("Loading Pokemon details...")
+            }
         }
         return
     }
-    val detail: PokemonDetail = detailState!!
-
+    
+    val detail = uiState.pokemon
     val typeColor = detail.types.firstOrNull()?.let { getColorFromType(it.type.name) }
         ?: MaterialTheme.colorScheme.primary
 
@@ -80,7 +131,7 @@ fun PokemonDetailScreen(
                 onClick = onBack,
                 modifier = Modifier.align(Alignment.TopStart).padding(16.dp)
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")
             }
             val context = LocalContext.current
             IconButton(
@@ -182,19 +233,19 @@ fun PokemonDetailScreen(
                     }
                 }
 
-                if (evolutions.isNotEmpty()) {
+                if (uiState.evolutions.isNotEmpty()) {
                     Spacer(Modifier.height(16.dp))
                     Text(text = stringResource(R.string.evolutions), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        evolutions.forEach { evo ->
+                        uiState.evolutions.forEach { evo ->
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.clickable { onEvolutionClick(evo.name) }
                             ) {
                                 AsyncImage(
                                     model = "${ApiConstants.SPRITE_BASE_URL}/${evo.id}.png",
-                                    contentDescription = null,
+                                    contentDescription = "Evolution: ${evo.name}",
                                     modifier = Modifier.size(80.dp)
                                 )
                                 Text(evo.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
