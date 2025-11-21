@@ -34,14 +34,13 @@ jobs:
     - name: Build, test and lint
       id: build
       run: ./gradlew assembleDebug testDebugUnitTest lintDebug --no-daemon --stacktrace
-      continue-on-error: false
       
     - name: Upload lint report
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: lint-report
-        path: app/build/reports/lint-results-*.html
+        path: app/build/reports/lint-results-*
         
     - name: Comment PR with build status
       if: always()
