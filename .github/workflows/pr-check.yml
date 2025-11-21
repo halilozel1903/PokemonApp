@@ -31,16 +31,10 @@ jobs:
     - name: Check build configuration
       run: ./gradlew tasks --no-daemon
       
-    - name: Assemble Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
-      
-    - name: Run unit tests
-      run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
-      
-    - name: Run lint analysis
-      id: lint
-      run: ./gradlew lintDebug --no-daemon --stacktrace
-      continue-on-error: true
+    - name: Build, test and lint
+      id: build
+      run: ./gradlew assembleDebug testDebugUnitTest lintDebug --no-daemon --stacktrace
+      continue-on-error: false
       
     - name: Upload lint report
       if: always()
@@ -54,10 +48,12 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const buildSuccess = '${{ steps.lint.outcome }}' !== 'failure' && '${{ job.status }}' !== 'failure';
-          const status = buildSuccess ? '✅ Build successful!' : '❌ Build failed!';
-          const lintStatus = '${{ steps.lint.outcome }}' === 'success' ? '✅ Lint passed' : '⚠️ Lint warnings';
-          const message = `### ${status}\n\n**Lint Check:** ${lintStatus}\n\nBuild and test verification completed.`;
+          const buildOutcome = '${{ steps.build.outcome }}';
+          const status = buildOutcome === 'success' ? '✅ Build successful!' : '❌ Build failed!';
+          const details = buildOutcome === 'success' 
+            ? 'All checks passed: build, tests, and lint analysis completed successfully.'
+            : 'Build failed. Please check the workflow logs for details.';
+          const message = `### ${status}\n\n${details}\n\n**Build outcome:** ${buildOutcome}`;
           
           github.rest.issues.createComment({
             issue_number: context.issue.number,
