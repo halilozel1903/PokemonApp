@@ -33,6 +33,7 @@ jobs:
       run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
       
     - name: Run lint analysis
+      id: lint
       run: ./gradlew lintDebug --no-daemon --stacktrace
       continue-on-error: true
       
@@ -48,9 +49,10 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const fs = require('fs');
-          const status = '${{ job.status }}' === 'success' ? '✅ Build successful!' : '❌ Build failed!';
-          const message = `### ${status}\n\nBuild and test verification completed.`;
+          const buildSuccess = '${{ steps.lint.outcome }}' !== 'failure' && '${{ job.status }}' !== 'failure';
+          const status = buildSuccess ? '✅ Build successful!' : '❌ Build failed!';
+          const lintStatus = '${{ steps.lint.outcome }}' === 'success' ? '✅ Lint passed' : '⚠️ Lint warnings';
+          const message = `### ${status}\n\n**Lint Check:** ${lintStatus}\n\nBuild and test verification completed.`;
           
           github.rest.issues.createComment({
             issue_number: context.issue.number,
