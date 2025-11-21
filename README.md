@@ -25,21 +25,21 @@ A modern Android application built with Jetpack Compose to explore Pokémon data
 The app uses **PokeAPI**, an open REST API that provides Pokémon details, species information and evolution data. All requests are made via HTTPS using Ktor with proper error handling and retry mechanisms.
 
 ## Tech Stack 🛠
-- **Kotlin** (1.8.22) with modern language features
-- **Jetpack Compose** (1.4.8) for modern Android UI with Material 3
-- **Ktor** (2.3.5) HTTP client for robust network operations
-- **Koin** (3.5.0) for dependency injection
-- **Coil** (2.5.0) for efficient image loading with caching
-- **Coroutines** (1.7.3) for asynchronous programming
+- **Kotlin** (1.9.25) with modern language features
+- **Jetpack Compose** (1.5.11) for modern Android UI with Material 3
+- **Ktor** (3.0.1) HTTP client for robust network operations
+- **Koin** (4.0.0) for dependency injection
+- **Coil** (2.7.0) for efficient image loading with caching
+- **Coroutines** (1.9.0) for asynchronous programming
 - **StateFlow** for reactive state management
 - **Result** types for type-safe error handling
-- Build system modernized with **Gradle** (7.4.2) and **Android Gradle Plugin** (7.4.2)
+- Build system modernized with **Gradle** (8.13) and **Android Gradle Plugin** (8.5.2)
 
 ## Getting Started ▶️
 1. Clone the repository
 2. Open the project in Android Studio Giraffe or later
 3. Sync the project and let Gradle download dependencies
-4. Run on a device or emulator (minSdk 26, targetSdk 33)
+4. Run on a device or emulator (minSdk 26, targetSdk 35)
 5. Enjoy exploring the Pokémon world with modern Android development patterns!
 
 ## Recent Modernizations 🔄
