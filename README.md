@@ -25,7 +25,7 @@ A modern Android application built with Jetpack Compose to explore Pokémon data
 The app uses **PokeAPI**, an open REST API that provides Pokémon details, species information and evolution data. All requests are made via HTTPS using Ktor with proper error handling and retry mechanisms.
 
 ## Tech Stack 🛠
-- **Kotlin** (1.9.25) with modern language features
+- **Kotlin** (1.9.23) with modern language features
 - **Jetpack Compose** (1.5.11) for modern Android UI with Material 3
 - **Ktor** (3.0.1) HTTP client for robust network operations
 - **Koin** (4.0.0) for dependency injection

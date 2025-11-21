@@ -7,7 +7,7 @@ The project had an invalid Android Gradle Plugin version (8.13.0) which doesn't 
 
 ### Build Configuration
 - **Android Gradle Plugin**: 8.13.0 (invalid) → 8.5.2 ✅
-- **Kotlin**: 1.8.22 → 1.9.25 ✅
+- **Kotlin**: 1.8.22 → 1.9.23 ✅
 - **Gradle Wrapper**: 8.13 (already up to date) ✅
 
 ### Android SDK
