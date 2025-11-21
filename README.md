@@ -1,5 +1,8 @@
 # Pokémon App 🚀
 
+[![Android CI](https://github.com/halilozel1903/PokemonApp/workflows/Android%20CI/badge.svg)](https://github.com/halilozel1903/PokemonApp/actions/workflows/android-ci.yml)
+[![PR Build Check](https://github.com/halilozel1903/PokemonApp/workflows/PR%20Build%20Check/badge.svg)](https://github.com/halilozel1903/PokemonApp/actions/workflows/pr-check.yml)
+
 A modern Android application built with Jetpack Compose to explore Pokémon data. It fetches information from the public [PokeAPI](https://pokeapi.co) service.
 
 ## Features ✨
@@ -50,6 +53,25 @@ The app uses **PokeAPI**, an open REST API that provides Pokémon details, speci
 - **Better Architecture**: Clean separation of concerns with repository pattern and proper abstraction
 - **Enhanced Accessibility**: Improved content descriptions and navigation support
 - **Performance Optimizations**: Better memory management and network request handling
+
+## CI/CD Pipeline 🔄
+The project includes automated continuous integration workflows using GitHub Actions:
+
+- **Android CI**: Runs on every push and pull request to main/master branches
+  - Builds the project with Gradle
+  - Runs lint checks for code quality
+  - Executes unit tests
+  - Uploads build reports on failure
+  - Generates debug APK on success
+
+- **PR Build Check**: Runs on every pull request
+  - Verifies the build assembles successfully
+  - Runs unit tests to ensure code quality
+  - Performs lint analysis
+  - Automatically comments on PRs with build status
+  - Uploads lint reports for review
+
+These workflows ensure code quality and prevent broken builds from being merged into the main branch.
 
 ## Screenshots 📷
 
