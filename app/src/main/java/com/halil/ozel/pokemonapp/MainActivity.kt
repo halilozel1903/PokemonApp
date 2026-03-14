@@ -18,6 +18,7 @@ import com.halil.ozel.pokemonapp.ui.theme.PokemonAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_PokemonApp)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
