@@ -35,7 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,7 +71,7 @@ fun PokemonListScreen(
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var sortOption by remember { mutableStateOf<SortOption?>(null) }
     var savedSortOption by remember { mutableStateOf<SortOption?>(null) }
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Clear sort option when searching, restore when search text is cleared
     LaunchedEffect(searchQuery.text) {
@@ -208,7 +208,7 @@ fun PokemonGridItem(
     viewModel: PokemonListViewModel,
     onClick: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val typeColor = uiState.pokemonTypes[pokemon.name]?.let { getColorFromType(it) }
 
     Card(
