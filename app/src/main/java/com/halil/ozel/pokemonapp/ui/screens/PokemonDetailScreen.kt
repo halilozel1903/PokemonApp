@@ -16,7 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -31,8 +31,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +52,8 @@ fun PokemonDetailScreen(
     onEvolutionClick: (String) -> Unit = {},
     viewModel: PokemonDetailViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     // Error handling
     uiState.errorMessage?.let { errorMessage ->
         Column(
@@ -97,7 +97,7 @@ fun PokemonDetailScreen(
         }
         return
     }
-    
+
     // Loading state
     if (uiState.isLoading || uiState.pokemon == null) {
         Box(
@@ -114,7 +114,7 @@ fun PokemonDetailScreen(
         }
         return
     }
-    
+
     val detail = uiState.pokemon!!
     val typeColor = detail.types.firstOrNull()?.let { getColorFromType(it.type.name) }
         ?: MaterialTheme.colorScheme.primary
@@ -130,7 +130,7 @@ fun PokemonDetailScreen(
                 onClick = onBack,
                 modifier = Modifier.align(Alignment.TopStart).padding(16.dp)
             ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Go back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back")
             }
             val context = LocalContext.current
             IconButton(
@@ -219,7 +219,7 @@ fun PokemonDetailScreen(
                     detail.stats.forEach { stat ->
                         Text(text = stat.stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
                         LinearProgressIndicator(
-                            progress = (stat.baseStat.coerceAtMost(100)) / 100f,
+                            progress = { (stat.baseStat.coerceAtMost(100)) / 100f },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
